@@ -1,14 +1,13 @@
 Q1:
-
-
-
+Function name: runFlagOfRecursiaDemo
+Defined in: GUI.cpp
 
 Q2:
-
-
-
+Number of triangles: 98641
 
 Q3:
+Triangles drawn in recursive call: 1094
+
 
 
 

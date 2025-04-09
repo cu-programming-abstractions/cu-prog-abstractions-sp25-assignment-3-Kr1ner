@@ -2,13 +2,60 @@
 using namespace std;
 
 Vector<Rectangle> makeTemple(const Rectangle& bounds, const TempleParameters& params) {
-    /* TODO: Delete this comment and the next few lines, then implement this function. */
-    (void) bounds;
-    (void) params;
-    return { };
+    if (params.order < 0) error("Invalid order");
+    if (params.order == 0) return {};
+
+    Vector<Rectangle> result;
+
+    // Base rectangle
+    int baseWidth = int(bounds.width * params.baseWidth);
+    int baseHeight = int(bounds.height * params.baseHeight);
+    int baseX = bounds.x + (bounds.width - baseWidth) / 2;
+    int baseY = bounds.y + bounds.height - baseHeight;
+
+    Rectangle base = { baseX, baseY, baseWidth, baseHeight };
+    result += base;
+
+    // Column rectangle
+    int columnWidth = int(bounds.width * params.columnWidth);
+    int columnHeight = int(bounds.height * params.columnHeight);
+    int columnX = bounds.x + (bounds.width - columnWidth) / 2;
+    int columnY = baseY - columnHeight;
+
+    Rectangle column = { columnX, columnY, columnWidth, columnHeight };
+    result += column;
+
+    // Recursive upper temple
+    int upperTempleHeight = int(bounds.height * params.upperTempleHeight);
+    Rectangle upperBounds = { columnX, columnY - upperTempleHeight, columnWidth, upperTempleHeight };
+
+    TempleParameters upperParams = params;
+    upperParams.order--;
+    Vector<Rectangle> upperTemple = makeTemple(upperBounds, upperParams);
+    result += upperTemple;
+
+    // Smaller temples
+    if (params.numSmallTemples >= 2) {
+        int smallTempleWidth = int(bounds.width * params.smallTempleWidth);
+        int smallTempleHeight = int(bounds.height * params.smallTempleHeight);
+
+        int totalSpacing = base.width - (params.numSmallTemples * smallTempleWidth);
+        int spacing = totalSpacing / (params.numSmallTemples - 1);
+
+        for (int i = 0; i < params.numSmallTemples; i++) {
+            int x = base.x + i * (smallTempleWidth + spacing);
+            int y = base.y - smallTempleHeight;
+            Rectangle smallBounds = { x, y, smallTempleWidth, smallTempleHeight };
+
+            TempleParameters smallParams = params;
+            smallParams.order--;
+            Vector<Rectangle> smallTemple = makeTemple(smallBounds, smallParams);
+            result += smallTemple;
+        }
+    }
+
+    return result;
 }
-
-
 
 /* * * * * Test Cases Below This Point * * * * */
 #include "GUI/SimpleTest.h"

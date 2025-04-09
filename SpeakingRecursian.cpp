@@ -2,12 +2,37 @@
 using namespace std;
 
 Vector<string> allRecursianWords(int numSyllables) {
-    /* TODO: Delete this comment and the next few lines, then implement
-     * this function.
-     */
-    (void) numSyllables;
-    return { };
+    if (numSyllables < 0) error("Syllables cannot be negative.");
+
+    Vector<string> result;
+    string vowels = "eiu";
+    string consonants = "bknrs'";
+
+    function<void(string, int)> helper = [&](string soFar, int remaining) {
+        if (remaining == 0) {
+            result += soFar;
+            return;
+        }
+
+        if (soFar.empty()) {
+            // First syllable can be just a vowel
+            for (char v : vowels) {
+                helper(soFar + v, remaining - 1);
+            }
+        }
+
+        // All syllables: consonant + vowel
+        for (char c : consonants) {
+            for (char v : vowels) {
+                helper(soFar + c + v, remaining - 1);
+            }
+        }
+    };
+
+    helper("", numSyllables);
+    return result;
 }
+
 
 
 /* * * * * Test Cases Below This Point * * * * */
